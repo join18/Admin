@@ -13,12 +13,12 @@
     <style>
       #box {
         width: 400px;
-        height: 500px;
+        height: 650px;
         border: 1px solid black;
         background-color: white;
         border-radius: 10px;
         margin: auto;
-        margin-top: 150px;
+        margin-top: 100px;
       }
       #box h2 {
         margin-top: 30px;
@@ -36,6 +36,34 @@
         margin: 0 2px;
         top: 2px;
         font-size: 26px;
+      }
+      #email {
+        width: 350px;
+      }
+      .layui-row {
+        width: 100%;
+      }
+      #reg-cellphone {
+        width: 350px;
+      }
+      #yanbox {
+        width: 188px;
+        height: 50px;
+        border: 1px solid rgb(235, 241, 246);
+        background-color: rgb(235, 241, 246);
+        border-radius: 5px;
+        margin-left: 160px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+      #yanbtn {
+        margin-top: 5px;
+        margin-left: -8px;
+        width: 100px;
+        height: 50px;
+      }
+      #qq {
+        width: 350px;
       }
     </style>
     <div id="box">
@@ -62,34 +90,38 @@
                   />
                 </div>
               </div>
+              <br />
               <div class="layui-col-xs5">
                 <div style="margin-left: 11px">
                   <button
                     type="button"
                     class="layui-btn layui-btn-fluid layui-btn-primary"
                     lay-on="reg-get-vercode"
+                    id="yanbtn"
                   >
                     获取验证码
                   </button>
                 </div>
               </div>
+              <div id="yanbox"></div>
             </div>
-          </div>
-          <div class="layui-form-item">
-            <div class="layui-input-wrap">
-              <div class="layui-input-prefix">
-                <i class="layui-icon layui-icon-vercode"></i>
+            <div class="layui-form-item">
+              <div class="layui-input-wrap">
+                <div class="layui-input-prefix">
+                  <i class="layui-icon layui-icon-vercode"></i>
+                </div>
+                <input
+                  type="text"
+                  name="vercode"
+                  value=""
+                  lay-verify="required"
+                  placeholder="验证码"
+                  lay-reqtext="请填写验证码"
+                  autocomplete="off"
+                  class="layui-input"
+                  id="tianma"
+                />
               </div>
-              <input
-                type="text"
-                name="vercode"
-                value=""
-                lay-verify="required"
-                placeholder="验证码"
-                lay-reqtext="请填写验证码"
-                autocomplete="off"
-                class="layui-input"
-              />
             </div>
           </div>
           <div class="layui-form-item">
@@ -124,6 +156,7 @@
                 autocomplete="off"
                 class="layui-input"
                 lay-affix="eye"
+                id="pwd"
               />
             </div>
           </div>
@@ -141,7 +174,36 @@
                 autocomplete="off"
                 class="layui-input"
                 lay-affix="clear"
+                id="name"
               />
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <div class="layui-inline">
+              <div class="layui-input-inline">
+                <input
+                  type="text"
+                  name="email"
+                  lay-verify="email"
+                  placeholder="邮箱"
+                  autocomplete="off"
+                  class="layui-input"
+                  id="email"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="layui-form-item">
+            <div class="layui-inline">
+              <div class="layui-input-inline">
+                <input
+                  type="text"
+                  placeholder="QQ"
+                  class="layui-input"
+                  id="qq"
+                  style="padding-left: 10px"
+                />
+              </div>
             </div>
           </div>
           <div class="layui-form-item">
@@ -151,6 +213,7 @@
               lay-verify="required"
               lay-skin="primary"
               title="同意"
+              id="checkbtn"
             />
             <a
               href="#terms"
@@ -161,11 +224,7 @@
             </a>
           </div>
           <div class="layui-form-item">
-            <button
-              class="layui-btn layui-btn-fluid"
-              lay-submit
-              lay-filter="demo-reg"
-            >
+            <button class="layui-btn layui-btn-fluid" lay-submit id="tjbtn">
               注册
             </button>
           </div>
@@ -219,6 +278,56 @@
           },
         });
       });
+    </script>
+    <script>
+      $(function () {
+        $("#yanbtn").on("click", yanbtnFun);
+        $("#tjbtn").on("click", tjFun);
+      });
+      function tjFun() {
+        event.preventDefault();
+        let username = $("#name").val();
+        let password = $("#pwd").val();
+        let email = $("#email").val();
+        let mobile = $("#reg-cellphone").val();
+        let captcha = $("#tianma").val();
+        let qq = $("#qq").val();
+        let obj = {
+          username,
+          password,
+          email,
+          mobile,
+          captcha,
+          qq,
+        };
+        console.log(obj);
+        $.ajax({
+          url: "http://manage.zzgoodqc.cn/api/user/register",
+          type: "POST",
+          data: obj,
+          success: function (data) {
+            if (data.status == 201) {
+              alert("注册成功");
+              location.assign("./log-on.html");
+            } else {
+              alert("未注册成功，请重新注册");
+            }
+          },
+        });
+      }
+      function yanbtnFun() {
+        let phone = $("#reg-cellphone").val();
+        console.log(phone);
+        if ($("#reg-cellphone")) {
+          $.ajax({
+            url: "http://manage.zzgoodqc.cn/api/user/captcha?mobile=" + phone,
+            type: "GET",
+            success: function (res) {
+              $("#yanbox").html(res);
+            },
+          });
+        }
+      }
     </script>
   </body>
 </html>

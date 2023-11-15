@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+    <link href="//unpkg.com/layui@2.8.18/dist/css/layui.css" rel="stylesheet" />
+    <script src="//unpkg.com/layui@2.8.18/dist/layui.js"></script>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      #bigbox {
+        width: 100%;
+        height: 100vh;
+      }
+      #headbox {
+        width: 100%;
+        height: 200px;
+        border: 1px solid white;
+        background-color: white;
+      }
+      #addbtn {
+        margin-top: 10px;
+        margin-left: 15px;
+      }
+      #headbox p {
+        margin-left: 130px;
+        margin-top: -28px;
+      }
+      #inpbox {
+        width: 80%;
+        height: 120px;
+        border-top: 1px solid #ccc;
+        margin-top: 40px;
+        margin-left: 15px;
+        padding-top: 10px;
+      }
+      #inpbox button {
+        margin-left: 26px;
+      }
+      #tablebox {
+        width: 100%;
+        height: 100vh;
+        background-color: white;
+        margin-top: 20px;
+      }
+      #tablebox table {
+        width: 98%;
+        margin: auto;
+      }
+      #tablebox td {
+        height: 50px;
+        border-top: 1px solid black;
+        text-align: left;
+      }
+      #tablebox th {
+        height: 50px;
+        line-height: 50px;
+        text-align: left;
+      }
+      #tablebox img {
+        width: 30px;
+        height: 30px;
+      }
+      #tablebox tbody button:active {
+        background-color: rgb(30, 159, 255);
+      }
+      /* 添加弹出框遮罩层 */
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        text-align: center;
+      }
+
+      /* 添加弹出框容器 */
+      .dialog {
+        background-image: url("https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fsafe-img.xhscdn.com%2Fbw1%2F57432013-aa3c-4597-b82f-78e90fa1622d%3FimageView2%2F2%2Fw%2F1080%2Fformat%2Fjpg&refer=http%3A%2F%2Fsafe-img.xhscdn.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1702606999&t=fd3cf1241a804fa0853801661367765f");
+        background-repeat: no-repeat;
+        background-size: 100% 750px;
+        background-color: #fefefe;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 400px;
+        height: 700px;
+        position: relative;
+        left: 35%;
+        color: white;
+        border-radius: 10px;
+      }
+
+      .dialog input[type="text"] {
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(to right, #3498db, #2c3e50);
+        color: #fff;
+        width: 260px;
+        height: 10px;
+        transition: all 0.3s ease;
+        margin-top: 35px;
+        padding-left: 20px;
+      }
+
+      .dialog input[type="text"]:focus {
+        outline: none;
+        box-shadow: 0 0 20px rgba(166, 115, 115, 0.573);
+      }
+      .dialog button {
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        width: 100px;
+        margin-top: 20px;
+      }
+      .dialog button {
+        background: linear-gradient(to right, #3498db, #2c3e50);
+        color: #fff;
+        cursor: pointer;
+      }
+
+      .dialog button:active {
+        box-shadow: 0 0 20px rgba(211, 5, 5, 0.548);
+        color: #3498db;
+      }
+      .dialog button {
+        margin-right: 40px;
+      }
+      .dialog button:nth-of-type(1) {
+        margin-left: 100px;
+      }
+      .dialog select {
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+      .dialog select {
+        background: linear-gradient(to right, #3498db, #2c3e50);
+        color: black;
+        cursor: pointer;
+      }
+      .dialog select:hover {
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .dialog select {
+        width: 200px;
+        margin-top: 20px;
+        margin-right: 90px;
+      }
+      #btnbox button {
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        width: 100px;
+        margin-top: 20px;
+      }
+      #btnbox button {
+        background: linear-gradient(to right, #3498db, #2c3e50);
+        color: #fff;
+        cursor: pointer;
+      }
+
+      #btnbox button:active {
+        box-shadow: 0 0 20px rgba(211, 5, 5, 0.548);
+        color: #3498db;
+      }
+      #btnbox button {
+        margin-left: 40px;
+      }
+      #modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      /* 弹出层内容容器 */
+      .modal-content {
+        background-color: black;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 400px;
+        height: 700px;
+        position: relative;
+        text-align: center;
+        color: white;
+        border-radius: 10px;
+      }
+      .modal-content input {
+        width: 260px;
+        height: 10px;
+        margin-top: 35px;
+        padding-left: 20px;
+      }
+      .modal-content button {
+        width: 100px;
+        margin-top: 20px;
+        margin-right: 40px;
+      }
+      .modal-content button:nth-of-type(1) {
+        margin-left: 100px;
+      }
+      .modal-content input[type="text"] {
+        padding: 10px;
+        border: 1px solid #333;
+        border-radius: 5px;
+        background-color: #222;
+        color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
+      }
+
+      /* 悬停时的样式 */
+      .modal-content input[type="text"]:hover {
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+      }
+
+      /* 聚焦时的样式 */
+      .modal-content input[type="text"]:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
+      }
+      /* 继续之前的样式 */
+
+      /* 按钮样式 */
+      .modal-content button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #333;
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        transition: background-color 0.3s ease;
+      }
+
+      /* 按钮悬停时的样式 */
+      .modal-content button:hover {
+        background-color: #555;
+      }
+
+      /* 按钮聚焦时的样式 */
+      .modal-content button:focus {
+        outline: none;
+        box-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
+      }
+      /* 继续之前的样式 */
+
+      /* 下拉框样式 */
+      .modal-content select {
+        padding: 10px;
+        border: 1px solid #333;
+        border-radius: 5px;
+        background-color: #222;
+        color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
+        margin-top: 20px;
+        margin-right: 140px;
+      }
+
+      /* 下拉框悬停时的样式 */
+      .modal-content select:hover {
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+      }
+
+      /* 下拉框聚焦时的样式 */
+      .modal-content select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 编辑的弹出框 -->
+    <div id="modal">
+      <div class="modal-content">
+        <h2>修改商品<b style="display: none"></b></h2>
+        &emsp;&emsp;排序： <input type="text" / id="Mysort"><br />
+        图片链接： <input type="text" / id="Myimg"><br />
+        商品标题： <input type="text" / id="Mytitle"><br />
+        商品价格： <input type="text" / id="Myprice"><br />
+        商品库存： <input type="text" / id="Mystock"><br />
+        商品状态：
+        <select id="Mystatus">
+          <option value="">请选择商品状态</option>
+          <option value="on_shelf">上架</option>
+          <option value="off_shelf">下架</option>
+          <option value="recycle_bin">回收站</option>
+        </select>
+        <br />
+        商品类型： <input type="text" / id="Mytype"><br />
+        实际销量： <input type="text" / id="Myactual_sales"><br />
+        &emsp;分类ID： <input type="text" id="Mycategory" /><br />
+        <button>修改</button><button>取消</button>
+      </div>
+    </div>
+    <!-- 添加弹出框 -->
+    <div id="dialogOverlay" class="overlay">
+      <div id="dialog" class="dialog">
+        <h2>添加商品</h2>
+        &emsp;&emsp;排序： <input type="text" / id="sort"><br />
+        图片链接： <input type="text" / id="img"><br />
+        商品标题： <input type="text" / id="title"><br />
+        商品价格： <input type="text" / id="price"><br />
+        商品库存： <input type="text" / id="stock"><br />
+        商品状态：
+        <select id="status">
+          <option value="">请选择商品状态</option>
+          <option value="on_shelf">上架</option>
+          <option value="off_shelf">下架</option>
+          <option value="recycle_bin">回收站</option>
+        </select>
+        <br />
+        商品类型： <input type="text" / id="type"><br />
+        实际销量： <input type="text" / id="actual_sales"><br />
+        &emsp;分类ID： <input type="text" id="category" /><br />
+        <button>添加</button><button>取消</button>
+      </div>
+    </div>
+    <div id="bigbox">
+      <div id="headbox">
+        <button type="button" class="layui-btn layui-bg-blue" id="addbtn">
+          +添加商品
+        </button>
+        <p>商品限制数量:已使用117个/无限制</p>
+        <div id="inpbox">
+          商品名称：
+          <input
+            type="text"
+            name=""
+            id=""
+            style="height: 25px; width: 300px"
+          />&ensp;&ensp;&ensp;&ensp;商品分类：
+          <select style="width: 150px; height: 25px">
+            <option value="">请选择</option>
+            <option value="AAA">选项 A</option>
+            <option value="BBB">选项 B</option>
+            <option value="CCC">选项 C</option>
+          </select>
+          &ensp;&ensp;&ensp;&ensp;创建时间：
+          <input
+            type="datetime-local"
+            style="height: 25px; width: 300px"
+          /><br />
+          商品类型：
+          <select style="width: 150px; height: 25px; margin-top: 20px">
+            <option value="">请选择</option>
+            <option value="AAA">选项 A</option>
+            <option value="BBB">选项 B</option>
+            <option value="CCC">选项 C</option>
+          </select>
+          &ensp;&ensp;&ensp;&ensp;库存预警：
+          <select style="width: 150px; height: 25px; margin-top: 20px">
+            <option value="">请选择</option>
+            <option value="AAA">选项 A</option>
+            <option value="BBB">选项 B</option>
+            <option value="CCC">选项 C</option>
+          </select>
+          &ensp;&ensp;&ensp;&ensp;商品来源：
+          <select style="width: 150px; height: 25px; margin-top: 20px">
+            <option value="">请选择</option>
+            <option value="AAA">选项 A</option>
+            <option value="BBB">选项 B</option>
+            <option value="CCC">选项 C</option>
+          </select>
+          <button type="button" class="layui-btn layui-btn-sm">搜索</button>
+          <button type="button" class="layui-btn layui-btn-sm">重置</button>
+          <button type="button" class="layui-btn layui-btn-sm">导出</button>
+        </div>
+      </div>
+
+      <div id="tablebox">
+        <table>
+          <thead>
+            <tr>
+              <th><input type="checkbox" /></th>
+              <th>排序</th>
+              <th>商品</th>
+              <th>价格</th>
+              <th>库存</th>
+              <th>实际销量</th>
+              <th>创建时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div id="btnbox">
+          <button>上一页</button>
+          <button>下一页</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      let page = 1,
+        limit = 5;
+      $(function () {
+        goodslist();
+        //打开添加弹出层点击事件
+        $("#addbtn").on("click", addFun);
+        //tbody里面的点击事件
+        $("#tablebox tbody").on("click", tboodyFun);
+        //添加点击事件
+        $(".overlay").on("click", addgoodsFun);
+        //分页点击事件
+        $("#btnbox").on("click", btnFun);
+        //修改事件
+        $("#modal").on("click", bianjiFun);
+      });
+      //修改商品
+      function bianjiFun() {
+        let token = localStorage.getItem("token");
+        let btn = event.target;
+        if (btn.tagName == "BUTTON" && btn.innerHTML == "取消") {
+          $("#modal").hide();
+        }
+        if (btn.tagName == "BUTTON" && btn.innerHTML == "修改") {
+          let id = $("b").html();
+          let sort = $("#Mysort").val();
+          let thumbnail = $("#Myimg").val();
+          let title = $("#Mytitle").val();
+          let price = $("#Myprice").val();
+          let stock = $("#Mystock").val();
+          let status = $("#Mystatus option:selected").val();
+          let type = $("#Mytype").val();
+          let actual_sales = $("#Myactual_sales").val();
+          let category = $("#Mycategory").val();
+          let obj = {
+            sort,
+            thumbnail,
+            title,
+            price,
+            stock,
+            status,
+            type,
+            actual_sales,
+            category,
+          };
+          $.ajax({
+            url: "https://manage.zzgoodqc.cn/api/goods/" + id,
+            type: "PUT",
+            headers: {
+              Authorization: token,
+            },
+            data: obj,
+            success: function (data) {
+              goodslist();
+              $("#modal").hide();
+            },
+          });
+        }
+      }
+      //分页函数
+      function btnFun() {
+        if (event.target.tagName == "BUTTON") {
+          switch (event.target.innerHTML) {
+            case "上一页":
+              page--;
+              page = page == 0 ? 1 : page;
+              break;
+            case "下一页":
+              page++;
+              break;
+          }
+          goodslist();
+        }
+      }
+      //添加商品
+      function addgoodsFun() {
+        let btn = event.target;
+        let token = localStorage.getItem("token");
+        if (btn.tagName == "BUTTON" && btn.innerHTML == "取消") {
+          $(".overlay").hide();
+        }
+        if (btn.tagName == "BUTTON" && btn.innerHTML == "添加") {
+          let sort = $("#sort").val();
+          let thumbnail = $("#img").val();
+          let title = $("#title").val();
+          let price = $("#price").val();
+          let stock = $("#stock").val();
+          let status = $("#status option:selected").val();
+          let type = $("#type").val();
+          let actual_sales = $("#actual_sales").val();
+          let category = $("#category").val();
+          let obj = {
+            sort,
+            thumbnail,
+            title,
+            price,
+            stock,
+            status,
+            type,
+            actual_sales,
+            category,
+          };
+          console.log(obj);
+          $.ajax({
+            url: "https://manage.zzgoodqc.cn/api/goods",
+            type: "POST",
+            headers: {
+              Authorization: token,
+            },
+            data: obj,
+            success: function (data) {
+              goodslist();
+            },
+          });
+          $(".overlay").hide();
+        }
+      }
+      //打开添加的弹出框
+      function addFun() {
+        $(".overlay").show();
+      }
+      //tbody里的点击事件（删除、修改、）
+      function tboodyFun() {
+        //删除事件
+        let token = localStorage.getItem("token");
+        let btn = event.target;
+        let id = $(event.target).data("id");
+        if (btn.tagName == "BUTTON" && btn.innerHTML == "删除") {
+          $.ajax({
+            url: `https://manage.zzgoodqc.cn/api/goods/` + id,
+            type: "DELETE",
+            headers: {
+              Authorization: token,
+            },
+            success: function (res) {
+              console.log(res);
+              goodslist();
+            },
+          });
+        }
+        //点击打开编辑的弹出框
+        if (btn.tagName == "BUTTON" && btn.innerHTML == "编辑") {
+          let token = localStorage.getItem("token");
+          let index = $(event.target).data("index");
+          $.ajax({
+            url: `https://manage.zzgoodqc.cn/api/goods`,
+            type: "GET",
+            headers: {
+              Authorization: token,
+            },
+            success: function (res) {
+              let arr = res.data.data;
+              $("b").html(arr[index].id);
+              $("#Mysort").val(arr[index].sort);
+              $("#Myimg").val(arr[index].thumbnail);
+              $("#Mytitle").val(arr[index].title);
+              $("#Myprice").val(arr[index].price);
+              $("#Mystock").val(arr[index].stock);
+              $("#Mystatus option:selected").val(arr[index].status);
+              $("#Mytype").val(arr[index].type);
+              $("#Myactual_sales").val(arr[index].actual_sales);
+              $("#Mycategory").val(arr[index].category);
+              $("#modal").show();
+            },
+          });
+        }
+      }
+      function goodslist() {
+        let token = localStorage.getItem("token");
+        $.ajax({
+          url: `https://manage.zzgoodqc.cn/api/goods?page=${page}&&limit=${limit}`,
+          type: "GET",
+          headers: {
+            Authorization: token,
+          },
+          success: function (res) {
+            let arr = res.data.data;
+            let html = "";
+            arr.forEach((item, index) => {
+              html += ` <tr>
+                   <td><input type="checkbox" /></td>
+                   <td>${item.sort}</td>
+                   <td>
+                       <img src="${item.thumbnail}" alt="" />
+                       <span>${item.title}</span>
+                   </td>
+                   <td>￥${item.price}</td>
+                   <td>${item.stock}</td>
+                   <td>${item.actual_sales}</td>
+                   <td>${item.create_time}</td>
+                   <td>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-id=${item.id}>删除</button>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-index=${index}>编辑</button>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">下架</button>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">推广</button>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">复制</button>
+                   </td>
+                 </tr>`;
+            });
+            $("#tablebox tbody").html(html);
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

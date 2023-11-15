@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+    <link href="//unpkg.com/layui@2.8.18/dist/css/layui.css" rel="stylesheet" />
+    <script src="//unpkg.com/layui@2.8.18/dist/layui.js"></script>
+    <style>
+      #bigbox {
+        width: 100%;
+        height: 100vh;
+        background-color: #ccc;
+      }
+      #sonbox {
+        width: 40%;
+        height: 100vh;
+        border: 1px solid white;
+        background-color: white;
+        margin: auto;
+      }
+      #sonbox h2 {
+        width: 95%;
+        height: 50px;
+        background-color: rgba(245, 245, 245, 0.6);
+        border-radius: 10px;
+        margin: 20px auto;
+        text-align: center;
+        line-height: 50px;
+      }
+      #sonbox table {
+        width: 95%;
+
+        margin: 40px auto;
+      }
+      #sonbox td {
+        height: 60px;
+        border-bottom: 1px solid #ccc;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="bigbox">
+      <div id="sonbox">
+        <h2>个&emsp;人&emsp;信&emsp;息</h2>
+        <table>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="box"></div>
+  </body>
+  <script>
+    $(function () {
+      let token = localStorage.getItem("token");
+      $.ajax({
+        url: "http://manage.zzgoodqc.cn/api/user/userinfo",
+        type: "GET",
+        headers: {
+          Authorization: token,
+        },
+        success: function (res) {
+          let arr = Array(res.data);
+          let html = "";
+          console.log(arr);
+          arr.forEach((item) => {
+            html += `<tr>
+                    <td style="font-weight: bold; padding-left: 120px">ID：</td>
+                    <td style="padding-right: 0px">${item.id}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; padding-left: 80px">用户名：</td>
+                    <td style="padding-right: 0px">${item.username}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; padding-left: 100px">邮件：</td>
+                    <td style="padding-right: 0px">${item.email}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; padding-left: 110px">QQ：</td>
+                    <td style="padding-right: 0px">${item.qq}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; padding-left: 60px">电话号码：</td>
+                    <td style="padding-right: 0px">${item.mobile}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; padding-left: 60px">创建时间：</td>
+                    <td style="padding-right: 0px">${item.created_at}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; padding-left: 60px">更新时间：</td>
+                    <td style="padding-right: 0px">${item.updated_at}</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; padding-left: 60px">个人签名：</td>
+                    <td style="padding-right: 0px">暂无</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold; padding-left: 60px">公司名称：</td>
+                    <td style="padding-right: 0px">暂无</td>
+                  </tr>`;
+          });
+          $("#sonbox table tbody").html(html);
+        },
+      });
+    });
+  </script>
+</html>

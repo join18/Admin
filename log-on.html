@@ -36,21 +36,48 @@
   <body>
     <div id="log-on-box">
       <h1>登&emsp;&emsp;录</h1>
-      用户名：<input type="text" />&nbsp;<span></span><br /><br />
-      &emsp;账号：<input type="text" />&nbsp;<span></span><br /><br />
-      &emsp;密码：<input type="password" />&nbsp;<span></span><br />
+      用户名：<input type="text" id="nickname" />&nbsp;<span></span><br /><br />
+      &emsp;密码：<input type="password" id="pwd" />&nbsp;<span></span><br />
       <button type="button" class="btn btn-outline-secondary" id="post">
         注册账号
       </button>
-      <button type="button" class="btn btn-outline-secondary">确认登录</button>
+      <button type="button" class="btn btn-outline-secondary" id="log-on-btn">
+        确认登录
+      </button>
     </div>
   </body>
   <script>
     $(function () {
       $("#post").on("click", postFun);
+      $("#log-on-btn").on("click", logonFun);
     });
     function postFun() {
       location.assign("./post.html");
+    }
+    function logonFun() {
+      let username = $("#nickname").val();
+      let password = $("#pwd").val();
+      let expiresTime = "1y";
+      let obj = {
+        username,
+        password,
+        expiresTime,
+      };
+      $.ajax({
+        url: "http://manage.zzgoodqc.cn/api/user/login",
+        type: "POST",
+        data: obj,
+        success: function (res) {
+          localStorage.setItem("token", res.data.token);
+          if (res.status == "200") {
+            alert(`${username}成功登录`);
+            location.assign("./index.html");
+            // location.assign("./user.html");
+          } else {
+            alert("登录失败，请重新登陆");
+          }
+        },
+      });
     }
   </script>
 </html>
