@@ -353,26 +353,29 @@
           <input
             type="text"
             name=""
-            id=""
+            id="inpname"
             style="height: 25px; width: 300px"
           />&ensp;&ensp;&ensp;&ensp;商品分类：
-          <select style="width: 150px; height: 25px">
-            <option value="">请选择</option>
-            <option value="AAA">选项 A</option>
-            <option value="BBB">选项 B</option>
-            <option value="CCC">选项 C</option>
+          <select style="width: 150px; height: 25px" id="inpfen">
+            <option value="请选择">请选择</option>
+            <option value="on_shelf">上架</option>
+            <option value="off_shelf">下架</option>
+            <option value="recycle_bin">回收站</option>
           </select>
           &ensp;&ensp;&ensp;&ensp;创建时间：
           <input
             type="datetime-local"
             style="height: 25px; width: 300px"
+            id="inptime"
           /><br />
           商品类型：
-          <select style="width: 150px; height: 25px; margin-top: 20px">
-            <option value="">请选择</option>
-            <option value="AAA">选项 A</option>
-            <option value="BBB">选项 B</option>
-            <option value="CCC">选项 C</option>
+          <select
+            style="width: 150px; height: 25px; margin-top: 20px"
+            id="inplei"
+          >
+            <option value="请选择">请选择</option>
+            <option value="1">实物</option>
+            <option value="2">虚拟</option>
           </select>
           &ensp;&ensp;&ensp;&ensp;库存预警：
           <select style="width: 150px; height: 25px; margin-top: 20px">
@@ -388,8 +391,12 @@
             <option value="BBB">选项 B</option>
             <option value="CCC">选项 C</option>
           </select>
-          <button type="button" class="layui-btn layui-btn-sm">搜索</button>
-          <button type="button" class="layui-btn layui-btn-sm">重置</button>
+          <button type="button" class="layui-btn layui-btn-sm" id="searchbtn">
+            搜索
+          </button>
+          <button type="button" class="layui-btn layui-btn-sm" id="Reload">
+            重置
+          </button>
           <button type="button" class="layui-btn layui-btn-sm">导出</button>
         </div>
       </div>
@@ -431,7 +438,69 @@
         $("#btnbox").on("click", btnFun);
         //修改事件
         $("#modal").on("click", bianjiFun);
+        //搜索时间
+        $("#searchbtn").on("click", searchFun);
+        //重置事件
+        $("#Reload").on("click", reloadFun);
       });
+      function reloadFun() {
+        $("#inpname").val("");
+        $("#inptime").val("");
+        $("#inpfen option:selected").val("请选择");
+        $("#inplei option:selected").val("请选择");
+        goodslist();
+      }
+      //搜索商品
+      function searchFun() {
+        let token = localStorage.getItem("token");
+        let name = $("#inpname").val();
+        let time = $("#inptime").val();
+        let fenlei = $("#inpfen option:selected").val();
+        let Twofenlei = $("#inplei option:selected").val();
+        let obj = {
+          title: name,
+          status: fenlei,
+          create_time: time,
+          type: Twofenlei,
+        };
+        console.log(obj);
+        $.ajax({
+          url: `https://manage.zzgoodqc.cn/api/goods?page=${page}&&limit=${limit}`,
+          type: "GET",
+          headers: {
+            Authorization: token,
+          },
+          data: obj,
+          success: function (res) {
+            console.log(res);
+            let arr = res.data.data;
+            console.log(arr);
+            let html = "";
+            arr.forEach((item, index) => {
+              html += ` <tr>
+                   <td><input type="checkbox" /></td>
+                   <td>${item.sort}</td>
+                   <td>
+                       <img src="${item.thumbnail}" alt="" />
+                       <span>${item.title}</span>
+                   </td>
+                   <td>￥${item.price}</td>
+                   <td>${item.stock}</td>
+                   <td>${item.actual_sales}</td>
+                   <td>${item.create_time}</td>
+                   <td>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-id=${item.id}>删除</button>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-index=${index}>编辑</button>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">下架</button>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">推广</button>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">复制</button>
+                   </td>
+                 </tr>`;
+            });
+            $("#tablebox tbody").html(html);
+          },
+        });
+      }
       //修改商品
       function bianjiFun() {
         let token = localStorage.getItem("token");
@@ -482,6 +551,7 @@
             case "上一页":
               page--;
               page = page == 0 ? 1 : page;
+
               break;
             case "下一页":
               page++;
