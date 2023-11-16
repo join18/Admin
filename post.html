@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Demo</title>
     <!-- 请勿在项目正式环境中引用该 layui.css 地址 -->
-    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.min.js"></script>
+    <script src="./node_modules/jquery/dist/jquery.js"></script>
     <link href="//unpkg.com/layui@2.8.18/dist/css/layui.css" rel="stylesheet" />
     <script src="//unpkg.com/layui@2.8.18/dist/layui.js"></script>
   </head>
@@ -320,7 +320,7 @@
         console.log(phone);
         if ($("#reg-cellphone")) {
           $.ajax({
-            url: "http://manage.zzgoodqc.cn/api/user/captcha?mobile=" + phone,
+            url: "https://manage.zzgoodqc.cn/api/user/captcha?mobile=" + phone,
             type: "GET",
             success: function (res) {
               $("#yanbox").html(res);
