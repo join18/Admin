@@ -406,6 +406,7 @@
           <thead>
             <tr>
               <th><input type="checkbox" /></th>
+              <th>ID</th>
               <th>排序</th>
               <th>商品</th>
               <th>价格</th>
@@ -423,251 +424,197 @@
         </div>
       </div>
     </div>
-    <script>
-      let page = 1,
-        limit = 5;
-      $(function () {
-        goodslist();
-        //打开添加弹出层点击事件
-        $("#addbtn").on("click", addFun);
-        //tbody里面的点击事件
-        $("#tablebox tbody").on("click", tboodyFun);
-        //添加点击事件
-        $(".overlay").on("click", addgoodsFun);
-        //分页点击事件
-        $("#btnbox").on("click", btnFun);
-        //修改事件
-        $("#modal").on("click", bianjiFun);
-        //搜索时间
-        $("#searchbtn").on("click", searchFun);
-        //重置事件
-        $("#Reload").on("click", reloadFun);
-      });
-      function reloadFun() {
-        $("#inpname").val("");
-        $("#inptime").val("");
-        $("#inpfen option:selected").val("请选择");
-        $("#inplei option:selected").val("请选择");
-        goodslist();
+  </body>
+  <script>
+    let page = 1,
+      limit = 5;
+    $(function () {
+      goodsRecylelist();
+      //tbody里面的点击事件
+      $("#tablebox tbody").on("click", tbodyFun1);
+      //打开添加弹出层点击事件
+      $("#addbtn").on("click", addFun);
+      //添加点击事件
+      $(".overlay").on("click", addgoodsFun);
+      //分页点击事件
+      $("#btnbox").on("click", btnFun);
+      //修改事件
+      $("#modal").on("click", bianjiFun);
+    });
+    function addgoodsFun() {
+      let btn = event.target;
+      let token = localStorage.getItem("token");
+      if (btn.tagName == "BUTTON" && btn.innerHTML == "取消") {
+        $(".overlay").hide();
       }
-      //搜索商品
-      function searchFun() {
-        let token = localStorage.getItem("token");
-        let name = $("#inpname").val();
-        let time = $("#inptime").val();
-        let fenlei = $("#inpfen option:selected").val();
-        let Twofenlei = $("#inplei option:selected").val();
+      if (btn.tagName == "BUTTON" && btn.innerHTML == "添加") {
+        let sort = $("#sort").val();
+        let thumbnail = $("#img").val();
+        let title = $("#title").val();
+        let price = $("#price").val();
+        let stock = $("#stock").val();
+        let status = $("#status option:selected").val();
+        let type = $("#type").val();
+        let actual_sales = $("#actual_sales").val();
+        let category = $("#category").val();
         let obj = {
-          title: name,
-          status: fenlei,
-          create_time: time,
-          type: Twofenlei,
+          sort,
+          thumbnail,
+          title,
+          price,
+          stock,
+          status,
+          type,
+          actual_sales,
+          category,
         };
         console.log(obj);
         $.ajax({
-          url: `https://manage.zzgoodqc.cn/api/goods?page=${page}&&limit=${limit}`,
-          type: "GET",
+          url: "https://manage.zzgoodqc.cn/api/goods",
+          type: "POST",
           headers: {
             Authorization: token,
           },
           data: obj,
-          success: function (res) {
-            console.log(res);
-            let arr = res.data.data;
-            console.log(arr);
-            let html = "";
-            arr.forEach((item, index) => {
-              html += ` <tr>
-                   <td><input type="checkbox" /></td>
-                   <td>${item.sort}</td>
-                   <td>
-                       <img src="${item.thumbnail}" alt="" />
-                       <span>${item.title}</span>
-                   </td>
-                   <td>￥${item.price}</td>
-                   <td>${item.stock}</td>
-                   <td>${item.actual_sales}</td>
-                   <td>${item.create_time}</td>
-                   <td>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-id=${item.id}>删除</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-index=${index}>编辑</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">下架</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">推广</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">复制</button>
-                   </td>
-                 </tr>`;
-            });
-            $("#tablebox tbody").html(html);
+          success: function (data) {
+            goodsRecylelist();
+            $(".overlay").hide();
           },
         });
       }
-      //修改商品
-      function bianjiFun() {
-        let token = localStorage.getItem("token");
-        let btn = event.target;
-        if (btn.tagName == "BUTTON" && btn.innerHTML == "取消") {
-          $("#modal").hide();
-        }
-        if (btn.tagName == "BUTTON" && btn.innerHTML == "修改") {
-          let id = $("b").html();
-          let sort = $("#Mysort").val();
-          let thumbnail = $("#Myimg").val();
-          let title = $("#Mytitle").val();
-          let price = $("#Myprice").val();
-          let stock = $("#Mystock").val();
-          let status = $("#Mystatus option:selected").val();
-          let type = $("#Mytype").val();
-          let actual_sales = $("#Myactual_sales").val();
-          let category = $("#Mycategory").val();
-          let obj = {
-            sort,
-            thumbnail,
-            title,
-            price,
-            stock,
-            status,
-            type,
-            actual_sales,
-            category,
-          };
-          $.ajax({
-            url: "https://manage.zzgoodqc.cn/api/goods/" + id,
-            type: "PUT",
-            headers: {
-              Authorization: token,
-            },
-            data: obj,
-            success: function (data) {
-              goodslist();
-              $("#modal").hide();
-            },
-          });
-        }
-      }
-      //分页函数
-      function btnFun() {
-        if (event.target.tagName == "BUTTON") {
-          switch (event.target.innerHTML) {
-            case "上一页":
-              page--;
-              page = page == 0 ? 1 : page;
+    }
+    //打开添加的弹出框
+    function addFun() {
+      $(".overlay").show();
+    }
+    function btnFun() {
+      if (event.target.tagName == "BUTTON") {
+        switch (event.target.innerHTML) {
+          case "上一页":
+            page--;
+            page = page == 0 ? 1 : page;
 
-              break;
-            case "下一页":
-              page++;
-              break;
-          }
-          goodslist();
+            break;
+          case "下一页":
+            page++;
+            break;
         }
+        goodsRecylelist();
       }
-      //添加商品
-      function addgoodsFun() {
-        let btn = event.target;
-        let token = localStorage.getItem("token");
-        if (btn.tagName == "BUTTON" && btn.innerHTML == "取消") {
-          $(".overlay").hide();
-        }
-        if (btn.tagName == "BUTTON" && btn.innerHTML == "添加") {
-          let sort = $("#sort").val();
-          let thumbnail = $("#img").val();
-          let title = $("#title").val();
-          let price = $("#price").val();
-          let stock = $("#stock").val();
-          let status = $("#status option:selected").val();
-          let type = $("#type").val();
-          let actual_sales = $("#actual_sales").val();
-          let category = $("#category").val();
-          let obj = {
-            sort,
-            thumbnail,
-            title,
-            price,
-            stock,
-            status,
-            type,
-            actual_sales,
-            category,
-          };
-          console.log(obj);
-          $.ajax({
-            url: "https://manage.zzgoodqc.cn/api/goods",
-            type: "POST",
-            headers: {
-              Authorization: token,
-            },
-            data: obj,
-            success: function (data) {
-              goodslist();
-              $(".overlay").hide();
-            },
-          });
-        }
+    }
+    function bianjiFun() {
+      let token = localStorage.getItem("token");
+      let btn = event.target;
+      if (btn.tagName == "BUTTON" && btn.innerHTML == "取消") {
+        $("#modal").hide();
       }
-      //打开添加的弹出框
-      function addFun() {
-        $(".overlay").show();
-      }
-      //tbody里的点击事件（删除、修改、）
-      function tboodyFun() {
-        //删除事件
-        let token = localStorage.getItem("token");
-        let btn = event.target;
-        let id = $(event.target).data("id");
-        if (btn.tagName == "BUTTON" && btn.innerHTML == "删除") {
-          $.ajax({
-            url: `https://manage.zzgoodqc.cn/api/goods/solt/` + id,
-            type: "DELETE",
-            headers: {
-              Authorization: token,
-            },
-            success: function (res) {
-              console.log(res);
-              goodslist();
-            },
-          });
-        }
-        //点击打开编辑的弹出框
-        if (btn.tagName == "BUTTON" && btn.innerHTML == "编辑") {
-          let token = localStorage.getItem("token");
-          let index = $(event.target).data("index");
-          $.ajax({
-            url: `https://manage.zzgoodqc.cn/api/goods`,
-            type: "GET",
-            headers: {
-              Authorization: token,
-            },
-            success: function (res) {
-              let arr = res.data.data;
-              $("b").html(arr[index].id);
-              $("#Mysort").val(arr[index].sort);
-              $("#Myimg").val(arr[index].thumbnail);
-              $("#Mytitle").val(arr[index].title);
-              $("#Myprice").val(arr[index].price);
-              $("#Mystock").val(arr[index].stock);
-              $("#Mystatus option:selected").val(arr[index].status);
-              $("#Mytype").val(arr[index].type);
-              $("#Myactual_sales").val(arr[index].actual_sales);
-              $("#Mycategory").val(arr[index].category);
-              $("#modal").show();
-            },
-          });
-        }
-      }
-      function goodslist() {
-        let token = localStorage.getItem("token");
+      if (btn.tagName == "BUTTON" && btn.innerHTML == "修改") {
+        let id = $("b").html();
+        let sort = $("#Mysort").val();
+        let thumbnail = $("#Myimg").val();
+        let title = $("#Mytitle").val();
+        let price = $("#Myprice").val();
+        let stock = $("#Mystock").val();
+        let status = $("#Mystatus option:selected").val();
+        let type = $("#Mytype").val();
+        let actual_sales = $("#Myactual_sales").val();
+        let category = $("#Mycategory").val();
+        let obj = {
+          sort,
+          thumbnail,
+          title,
+          price,
+          stock,
+          status,
+          type,
+          actual_sales,
+          category,
+        };
         $.ajax({
-          url: `https://manage.zzgoodqc.cn/api/goods?page=${page}&&limit=${limit}&&is_sale=1`,
+          url: "https://manage.zzgoodqc.cn/api/goods/" + id,
+          type: "PUT",
+          headers: {
+            Authorization: token,
+          },
+          data: obj,
+          success: function (data) {
+            goodsRecylelist();
+            $("#modal").hide();
+          },
+        });
+      }
+    }
+    function tbodyFun1() {
+      let token = localStorage.getItem("token");
+      let btn = event.target;
+      let id = $(event.target).data("id");
+      if (btn.tagName == "BUTTON" && btn.innerHTML == "删除") {
+        $.ajax({
+          url: `https://manage.zzgoodqc.cn/api/goods/recycle/` + id,
+          type: "DELETE",
+          headers: {
+            Authorization: token,
+          },
+          success: function (res) {
+            goodsRecylelist();
+          },
+        });
+      }
+      if (btn.tagName == "BUTTON" && btn.innerHTML == "恢复") {
+        let id = $(event.target).data("id");
+        $.ajax({
+          url: " https://manage.zzgoodqc.cn/api/goods/ " + id,
+          type: "PATCH",
+          headers: {
+            Authorization: token,
+          },
+          success: function (res) {
+            goodsRecylelist();
+          },
+        });
+      }
+      if (btn.tagName == "BUTTON" && btn.innerHTML == "编辑") {
+        let token = localStorage.getItem("token");
+        let index = $(event.target).data("index");
+        $.ajax({
+          url: `https://manage.zzgoodqc.cn/api/goods?is_recycle=1`,
           type: "GET",
           headers: {
             Authorization: token,
           },
           success: function (res) {
-            console.log(res);
             let arr = res.data.data;
-            let html = "";
-            arr.forEach((item, index) => {
-              html += ` <tr>
+            $("b").html(arr[index].id);
+            $("#Mysort").val(arr[index].sort);
+            $("#Myimg").val(arr[index].thumbnail);
+            $("#Mytitle").val(arr[index].title);
+            $("#Myprice").val(arr[index].price);
+            $("#Mystock").val(arr[index].stock);
+            $("#Mystatus option:selected").val(arr[index].status);
+            $("#Mytype").val(arr[index].type);
+            $("#Myactual_sales").val(arr[index].actual_sales);
+            $("#Mycategory").val(arr[index].category);
+            $("#modal").show();
+          },
+        });
+      }
+    }
+    function goodsRecylelist() {
+      let token = localStorage.getItem("token");
+      $.ajax({
+        url: `https://manage.zzgoodqc.cn/api/goods?page=${page}&&limit=${limit}&&is_recycle=1`,
+        type: "GET",
+        headers: {
+          Authorization: token,
+        },
+        success: function (res) {
+          console.log(res);
+          let arr = res.data.data;
+          let html = "";
+          arr.forEach((item, index) => {
+            html += ` <tr>
                    <td><input type="checkbox" /></td>
+                   <td>${item.id}</td>
                    <td>${item.sort}</td>
                    <td>
                        <img src="${item.thumbnail}" alt="" />
@@ -679,17 +626,14 @@
                    <td>${item.create_time}</td>
                    <td>
                      <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-id=${item.id}>删除</button>
+                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-id=${item.id}>恢复</button>
                      <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-index=${index}>编辑</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">下架</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">推广</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">复制</button>
                    </td>
                  </tr>`;
-            });
-            $("#tablebox tbody").html(html);
-          },
-        });
-      }
-    </script>
-  </body>
+          });
+          $("#tablebox tbody").html(html);
+        },
+      });
+    }
+  </script>
 </html>

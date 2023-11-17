@@ -656,7 +656,7 @@
       function goodslist() {
         let token = localStorage.getItem("token");
         $.ajax({
-          url: `https://manage.zzgoodqc.cn/api/goods?page=${page}&&limit=${limit}&&is_sale=1`,
+          url: `https://manage.zzgoodqc.cn/api/goods?page=${page}&&limit=${limit}&&is_stock=1`,
           type: "GET",
           headers: {
             Authorization: token,
@@ -678,11 +678,7 @@
                    <td>${item.actual_sales}</td>
                    <td>${item.create_time}</td>
                    <td>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-id=${item.id}>删除</button>
                      <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-index=${index}>编辑</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">下架</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">推广</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">复制</button>
                    </td>
                  </tr>`;
             });

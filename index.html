@@ -75,9 +75,11 @@
               <a class="" href="javascript:;">商品管理</a>
               <dl class="layui-nav-child">
                 <dd><a href="javascript:;" id="goodslist">出售中</a></dd>
-                <dd><a href="javascript:;">已售罄</a></dd>
+                <dd><a href="javascript:;" id="goodslisthuishou">回收站</a></dd>
+                <dd>
+                  <a href="javascript:;" id="goodslistshoukong">已售罄</a>
+                </dd>
                 <dd><a href="javascript:;">仓库中</a></dd>
-                <dd><a href="javascript:;">回收站</a></dd>
               </dl>
             </li>
             <li class="layui-nav-item">
@@ -138,11 +140,13 @@
         $(".layui-card-body").html(` <iframe src="./user.html" ></iframe>`);
       });
       $("#goodslist").click(function () {
-        let btn = $(this).text().trim();
-        switch (btn) {
-          case "出售中":
-            $(".layui-card-body").html(` <iframe src="./sell.html" ></iframe>`);
-        }
+        $(".layui-card-body").html(` <iframe src="./sell.html" ></iframe>`);
+      });
+      $("#goodslisthuishou").click(function () {
+        $(".layui-card-body").html(` <iframe src="./Recycle.html" ></iframe>`);
+      });
+      $("#goodslistshoukong").click(function () {
+        $(".layui-card-body").html(` <iframe src="./sellout.html" ></iframe>`);
       });
     </script>
   </body>
