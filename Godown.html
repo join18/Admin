@@ -293,51 +293,6 @@
         border-color: #3498db;
         box-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
       }
-
-      input[type="file"] {
-        border: none;
-        border-radius: 5px;
-        background-color: #61dafb;
-        color: #282c34;
-        box-shadow: 0 0 10px rgba(76, 111, 121, 0.7);
-        transition: box-shadow 0.3s ease;
-        height: 25px;
-        line-height: 15px;
-        margin-top: 10px;
-        margin-left: 10;
-        width: 200px;
-      }
-
-      input[type="file"]:focus {
-        outline: none;
-        box-shadow: 0 0 20px rgba(97, 218, 251, 0.9);
-      }
-
-      input[type="file"] {
-        cursor: pointer;
-      }
-
-      /* 隐藏文件输入框的默认样式 */
-      input[type="file"]::-webkit-file-upload-button {
-        visibility: hidden;
-      }
-
-      /* 自定义文件输入框的样式 */
-      input[type="file"]::before {
-        content: "选择文件";
-        display: inline-block;
-        background-color: #61dafb;
-        color: #282c34;
-        border: none;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(97, 218, 251, 0.7);
-        cursor: pointer;
-      }
-
-      /* 鼠标悬停时改变文件输入框的样式 */
-      input[type="file"]:hover::before {
-        background-color: #45aaf2;
-      }
     </style>
   </head>
   <body>
@@ -400,7 +355,7 @@
             name=""
             id="inpname"
             style="height: 25px; width: 300px"
-          />&ensp;&ensp;&ensp;&ensp;商品状态：
+          />&ensp;&ensp;&ensp;&ensp;商品分类：
           <select style="width: 150px; height: 25px" id="inpfen">
             <option value="请选择">请选择</option>
             <option value="on_shelf">上架</option>
@@ -422,28 +377,27 @@
             <option value="1">实物</option>
             <option value="2">虚拟</option>
           </select>
-          &ensp;&ensp;&ensp;&ensp;商品类型：
+          &ensp;&ensp;&ensp;&ensp;库存预警：
           <select style="width: 150px; height: 25px; margin-top: 20px">
             <option value="">请选择</option>
-            <option value="1">双十一</option>
-            <option value="2">双十二</option>
+            <option value="AAA">选项 A</option>
+            <option value="BBB">选项 B</option>
+            <option value="CCC">选项 C</option>
           </select>
-          <button
-            type="button"
-            class="layui-btn layui-btn-sm"
-            id="searchbtn"
-            style="border-radius: 6px"
-          >
+          &ensp;&ensp;&ensp;&ensp;商品来源：
+          <select style="width: 150px; height: 25px; margin-top: 20px">
+            <option value="">请选择</option>
+            <option value="AAA">选项 A</option>
+            <option value="BBB">选项 B</option>
+            <option value="CCC">选项 C</option>
+          </select>
+          <button type="button" class="layui-btn layui-btn-sm" id="searchbtn">
             搜索
           </button>
-          <button
-            type="button"
-            class="layui-btn layui-btn-sm"
-            id="Reload"
-            style="border-radius: 6px"
-          >
+          <button type="button" class="layui-btn layui-btn-sm" id="Reload">
             重置
           </button>
+          <button type="button" class="layui-btn layui-btn-sm">导出</button>
         </div>
       </div>
 
@@ -490,7 +444,11 @@
         $("#Reload").on("click", reloadFun);
       });
       function reloadFun() {
-        location.reload(true);
+        $("#inpname").val("");
+        $("#inptime").val("");
+        $("#inpfen option:selected").val("请选择");
+        $("#inplei option:selected").val("请选择");
+        goodslist();
       }
       //搜索商品
       function searchFun() {
@@ -698,7 +656,7 @@
       function goodslist() {
         let token = localStorage.getItem("token");
         $.ajax({
-          url: `https://manage.zzgoodqc.cn/api/goods?page=${page}&&limit=${limit}&&is_sale=1`,
+          url: `https://manage.zzgoodqc.cn/api/goods?page=${page}&&limit=${limit}&&is_warehouse=1`,
           type: "GET",
           headers: {
             Authorization: token,
@@ -722,9 +680,6 @@
                    <td>
                      <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-id=${item.id}>删除</button>
                      <button type="button" class="layui-btn layui-btn-primary layui-btn-xs" data-index=${index}>编辑</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">下架</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">推广</button>
-                     <button type="button" class="layui-btn layui-btn-primary layui-btn-xs">复制</button>
                    </td>
                  </tr>`;
             });

@@ -79,7 +79,7 @@
                 <dd>
                   <a href="javascript:;" id="goodslistshoukong">已售罄</a>
                 </dd>
-                <dd><a href="javascript:;">仓库中</a></dd>
+                <dd><a href="javascript:;" id="goodslistcangku">仓库中</a></dd>
               </dl>
             </li>
             <li class="layui-nav-item">
@@ -147,6 +147,9 @@
       });
       $("#goodslistshoukong").click(function () {
         $(".layui-card-body").html(` <iframe src="./sellout.html" ></iframe>`);
+      });
+      $("#goodslistcangku").click(function () {
+        $(".layui-card-body").html(` <iframe src="./Godown.html" ></iframe>`);
       });
     </script>
   </body>
